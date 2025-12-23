@@ -1,0 +1,70 @@
+DEFINE FUNCTION renderVelto WITH (URL, MOUNT_SELECTOR)
+    LOAD TEXT FROM URL INTO RAW_TEXT
+    PARSE RAW_TEXT AS XML INTO XML_DOC
+
+    SET ROOT TO XML_DOC.GET("velto")
+
+    IF ROOT IS NULL THEN
+        LOG "Velto Runtime: No <velto> root element found."
+        RETURN
+    END
+
+    SET DOM_TREE TO CALL convertVeltoNode WITH (ROOT)
+    SET MOUNT TO QUERY_DOCUMENT(MOUNT_SELECTOR)
+
+    IF MOUNT IS NULL THEN
+        LOG "Velto Runtime: Mount point not found."
+        RETURN
+    END
+
+    MOUNT.APPEND(DOM_TREE)
+END
+
+
+DEFINE FUNCTION convertVeltoNode WITH (NODE)
+    SET TAG TO NODE.TAG_NAME
+    SET ELEMENT TO CREATE_ELEMENT(CALL mapVeltoTag WITH (TAG))
+
+    IF NODE.HAS_SINGLE_TEXT_CHILD THEN
+        ELEMENT.SET_TEXT(NODE.TEXT_CONTENT)
+    END
+
+    LOOP OVER ATTR IN NODE.ATTRIBUTES
+        CALL handleVeltoAttribute WITH (ELEMENT, ATTR.NAME, ATTR.VALUE)
+    END
+
+    LOOP OVER CHILD IN NODE.CHILDREN
+        ELEMENT.APPEND(CALL convertVeltoNode WITH (CHILD))
+    END
+
+    RETURN ELEMENT
+END
+
+
+DEFINE FUNCTION mapVeltoTag WITH (TAG)
+    DECLARE TAG_MAP AS DICTIONARY
+    SET TAG_MAP["velto"] TO "div"
+    SET TAG_MAP["content"] TO "div"
+    SET TAG_MAP["text1"] TO "p"
+    SET TAG_MAP["text2"] TO "p"
+    SET TAG_MAP["button"] TO "button"
+    SET TAG_MAP["image"] TO "img"
+
+    IF TAG_MAP.CONTAINS(TAG) THEN
+        RETURN TAG_MAP[TAG]
+    ELSE
+        RETURN "div"
+    END
+END
+
+
+DEFINE FUNCTION handleVeltoAttribute WITH (ELEMENT, NAME, VALUE)
+    IF NAME STARTS_WITH "on-click:redirect" THEN
+        ELEMENT.ADD_EVENT("click", FUNCTION()
+            SET WINDOW.LOCATION TO VALUE
+        END)
+        RETURN
+    END
+
+    ELEMENT.SET_ATTRIBUTE(NAME, VALUE)
+END

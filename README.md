@@ -16,7 +16,7 @@ The runtime for Velto
 Velto is designed for no installation, running directly in the browser, so all you need to do is load the Velto runtime script, like this:
 
 ```html
-<script src="https://velto-framework.github.io/cdn/velto.js"></script>
+<script src="https://velto-framework.github.io/runtime/velto.js"></script>
 ```
 
 Then, create an `index.html` like you would a regular HTML website, and inside the body add this:
@@ -24,7 +24,7 @@ Then, create an `index.html` like you would a regular HTML website, and inside t
 ```html
 <div id="app"></div>
 
-<script src="https://velto-framework.github.io/cdn/velto.js"></script>
+<script src="https://velto-framework.github.io/runtime/velto.js"></script>
 <script>
   renderVelto("./index.velto", "#app");
 </script>

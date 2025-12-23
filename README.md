@@ -6,7 +6,6 @@ The runtime for Velto
 
 - Load and render `.velto` files in the browser
 - XML‑style markup with custom Velto tags
-- Declarative behaviour via `on-event:action="value"` attributes
 - Simple tag‑to‑DOM mapping system
 - Extensible architecture for future components, styling, and events
 - Zero dependencies
@@ -25,7 +24,7 @@ Then, create an `index.html` like you would a regular HTML website, and inside t
 ```html
 <div id="app"></div>
 
-<script src="https://velto-framework.github.io/cdn/velto.js""></script>
+<script src="https://velto-framework.github.io/cdn/velto.js"></script>
 <script>
   renderVelto("./index.velto", "#app");
 </script>
